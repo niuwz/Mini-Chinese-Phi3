@@ -162,6 +162,7 @@ class MiniPhi3FlashAttention2(Phi3FlashAttention2):
     def __init__(self, config: MiniPhiConfig, origin_params):
         super().__init__(config, layer_idx=0)
         self.__replace_param(origin_params)
+        "Flash attention does not support cope"
         self.cope = CoPE(self.max_position_embeddings, self.head_dim)
 
     def __replace_param(self, origin_params: dict):
@@ -332,9 +333,9 @@ class MiniPhi3FlashAttention2(Phi3FlashAttention2):
 
 class MiniPhi3(Phi3ForCausalLM):
     """
-    参数量约0.1B
+    参数量约0.13B
     MiniPhi3(
-        (embed_tokens): Embedding(30960, 768, padding_idx=30959)
+        (embed_tokens): Embedding(32000, 768, padding_idx=0)
         (embed_dropout): Dropout(p=0.0, inplace=False)
         (layers): ModuleList(
             (0-11): 12 x Phi3DecoderLayer(
@@ -360,6 +361,7 @@ class MiniPhi3(Phi3ForCausalLM):
 
     def __init__(self, config: MiniPhiConfig):
         super().__init__(config)
+        "原计划将CoPE加入Phi3，但是因为其暂时不支持Flash Attention，因此暂时搁置"
         if config.use_cope:
             ATTN_CLS = MiniPhi3FlashAttention2 if config._attn_implementation == "flash_attention_2" else MiniPhi3Attention
             for i, layer in enumerate(self.model.layers):

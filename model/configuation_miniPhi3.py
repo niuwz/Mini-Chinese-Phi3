@@ -6,7 +6,7 @@ logger = logging.get_logger(__name__)
 
 class MiniPhiConfig(PretrainedConfig):
 
-    model_type = "mini_phi3"
+    model_type = "phi3"
     keys_to_ignore_at_inference = ["past_key_values"]
 
     def __init__(
