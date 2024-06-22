@@ -17,6 +17,8 @@ Mini-Chinese-Phi3是一个基于phi3模型结构的小型对话模型，总参�
 
 项目中的所有训练过程均在两张3090显卡上进行，使用DeepSpeed框架和Flash Attention 2进行加速，预训练用时约40小时，SFT和DPO微调共用时约8小时。本项目是我在学习LLM过程中的一个简单实践，同时也希望能够帮助到同样初学大模型的小伙伴。
 
+模型参数现已开源，开放模型权重以供下载。项目地址：[Mini-Chinese-Phi3](https://huggingface.co/niwz/Mini-Chinese-Phi3)，可以通过`tokenizer = AutoTokenizer.from_pretrained("niwz/Mini-Chinese-Phi3")`和`model = AutoModelForCausalLM.from_pretrained("niwz/Mini-Chinese-Phi3")`直接加载模型参数。
+
 
 # 目录结构
 
