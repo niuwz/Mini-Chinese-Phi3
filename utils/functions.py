@@ -23,26 +23,6 @@ import ujson
 END_PUN = set(".。!！）)》}】?？\"”")
 
 
-class MyTrainerCallback(TrainerCallback):
-    log_cnt = 0
-
-    def on_log(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
-        '''
-        在打印 n 次日志后清除cuda缓存，适合低显存设备，能防止OOM
-        '''
-        self.log_cnt += 1
-        if self.log_cnt % 2 == 0:
-            torch.cuda.empty_cache()
-
-    def on_epoch_end(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
-        '''
-        在 on_epoch_end 时保存一次模型。
-        TrainingArguments的 save_strategy 中 epoch 和 steps 不兼容。要实现每隔 save_steps 步保存一次检查点，考虑到磁盘空间大小，最多只保存最近N个检查点。
-        '''
-        # 设置should_save=True并返回即可
-        control.should_save = True
-        return control
-
 
 # 保留中文和英文、下划线，不要标点符号
 NON_CHAR = re.compile("[^[\u4E00-\u9FA5|A-Za-z_0-9]")
@@ -102,96 +82,6 @@ class DropDatasetDuplicate:
             need_to_remove_idx |= similar_index_cluster[key_idx]
 
         return need_to_remove_idx
-
-
-def get_T5_config(config, vocab_size: int, decoder_start_token_id: int = 0, eos_token_id: int = 1) -> T5Config:
-    '''
-    用户配置转换为T5Config
-    '''
-    t5_config = T5Config()
-    # t5_config.model_type = 'TextToTextModel'
-    # 初始化
-    t5_config.d_ff = config.d_ff
-    t5_config.d_kv = config.d_kv
-    t5_config.d_model = config.d_model
-    t5_config.num_decoder_layers = config.num_decoder_layers
-    t5_config.num_heads = config.num_heads
-    t5_config.num_layers = config.num_layers
-    t5_config.vocab_size = vocab_size
-    t5_config.decoder_start_token_id = decoder_start_token_id
-    t5_config.eos_token_id = eos_token_id
-
-    return t5_config
-
-
-def f1_p_r_compute(spo_list_pred: list, spo_list_true: list, repair: bool = False):
-    '''
-    spo_list: [ [(s,p,o)...], [(s,p,o)]], 每一行[(s,p,o)...]为一个句子中的spo
-    计算spo的f1分数，精确率，召回率，
-    '''
-    assert len(spo_list_pred) == len(spo_list_true)
-
-    def repair_song_album(spo_list: list, song: list, album: list):
-        '''
-        修复一条文本的'歌曲'和'专辑'的spo。对于歌曲x（subject）的关系歌手、作词、作曲，x必须同时存在于song和album中
-        '''
-        if len(song) == 0 and len(album) == 0:
-            return spo_list
-
-        ps = ['歌手', '作词', '作曲']
-        new_spo_list = []
-        for spo in spo_list:
-            s, p = spo[0], spo[1]
-            if p in ps and s in album and s not in song:
-                continue
-            new_spo_list.append(spo)
-
-        return new_spo_list
-
-    def repair_song_album_list(spo_list: list):
-        '''
-        '''
-        new_spo_list = []
-        for spos in spo_list:
-            song, album = [], []
-            for spo in spos:
-                s, p, o = spo
-                if p == '所属专辑':
-                    song.append(s)
-                    album.append(o)
-            new_spo_list.append(repair_song_album(spos, song, album))
-
-        return new_spo_list
-    if repair:
-        spo_list_pred = repair_song_album_list(spo_list_pred)
-        spo_list_true = repair_song_album_list(spo_list_true)
-
-    TP = 1e-10      # 正类判定为正类, A
-    # TN = 1e-10    # 负类判定为负类
-    TP_FP = 1e-10   # 检索到的, A + B
-    TP_FN = 1e-10   # 真正想要的，A + C
-    # FP = 1e-10    # 负类判定为正类
-    # FN = 1e-10    # 正类判定为负类
-
-    # p = a / (a + b)
-    # r = a / (a + c)
-    # f1 = 2pr / (p + r)
-
-    for i in range(len(spo_list_true)):
-        pred_set = set(spo_list_pred[i])
-        true_set = set(spo_list_true[i])
-
-        pred_true_set = pred_set & true_set     # 预测和真实取交集
-
-        TP += len(pred_true_set)    # 检索到且是想要的， A
-        TP_FP += len(pred_set)      # 检索到的，包括想要的和不想要的，A + B
-        TP_FN += len(true_set)      # 真正想要的， 包括检索到和没检索到的，A + C
-
-    p = TP / TP_FP
-    r = TP / TP_FN
-    f1 = (2 * p * r) / (p + r)
-
-    return f1, p, r
 
 
 def fixed_response(item: str) -> str:

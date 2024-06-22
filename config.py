@@ -55,8 +55,6 @@ class MiniPhi3PreTrainConfig:
 
     keep_latest_n_ckp: int = 5
 
-    seed: int = 2024
-    dataloader_buffer_size: int = 50000
     max_seq_len: int = 512
 
 # 以下为sft配置
@@ -129,9 +127,6 @@ class MiniPhi3DPOConfig:
     dpo_data_file: Tuple[str] = (DATA_ROOT + 'train-dpo.parquet', 
                                  DATA_ROOT + 'test-dpo.parquet',
                                  DATA_ROOT + 'rejected_dpo_alpaca_gpt4_data_zh.parquet')
-    # dpo_eval_file: str = DATA_ROOT + '/data/test-dpo.parquet'
-
-    # adapter_file: str = PROJECT_ROOT + '/data/dpo/adapter_model.safetensors'
     log_dir: str = PROJECT_ROOT + '/logs/'
     optim: str = "adamw_torch"
     weight_decay: float = 0.02

@@ -182,8 +182,8 @@ def process_bake_qa(response_less_word: int = 15, max_length: int = 512, group_c
 
     '''
     file_names = [
-        '/datasets/raw_data/baike/baike_qa_train.json',
-        '/datasets/raw_data/baike/baike_qa_valid.json',
+        DATA_ROOT + 'raw_data/baike/baike_qa_train.json',
+        DATA_ROOT + 'raw_data/baike/baike_qa_valid.json',
     ]
 
     save_file_name = PROJECT_ROOT + '/datasets/processed_data/baike_qa.parquet'
@@ -302,7 +302,6 @@ def process_zhihu_kol_dataset(prompt_less_word: int = 4, response_less_word: int
     '''
     处理知乎数据集
     '''
-    # C:\Users\niuwenzhe\Desktop\LLM_Learning\NLP\mini_NPT\datasets\raw_data
 
     raw_zhihu_data_path = abspath(
         dirname(__file__)) + '/datasets/raw_data/zhihu/'
