@@ -1,21 +1,10 @@
 import os
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
-# os.environ["TOKENIZERS_PARALLELISM"] = "true"
 from config import PROJECT_ROOT, DATA_ROOT, TEMP_ROOT, MiniPhi3DPOConfig
 import time
 import pandas as pd
 import torch
 from datasets import Dataset, load_dataset
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    BitsAndBytesConfig,
-    HfArgumentParser,
-    TrainingArguments,
-    pipeline,
-    logging,
-)
-import numpy as np
+from transformers import AutoTokenizer
 from peft import LoraConfig, PeftModel
 from trl import DPOTrainer, DPOConfig
 from model.configuation_miniPhi3 import MiniPhiConfig
