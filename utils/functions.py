@@ -257,8 +257,6 @@ def save_model_config(config_dict: dict, file: str) -> None:
     '''
     将模型配置写入到json文件, 输入模型保存的目录及文件名
     '''
-    # file = file.replace('\\', '/')
-    # file = '{}/model_config.json'.format('/'.join(file.split('/')[0: -1]))
 
     with open(file, 'w', encoding='utf-8') as f:
         ujson.dump(config_dict, f, indent=4, ensure_ascii=False)
