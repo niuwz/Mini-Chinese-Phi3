@@ -46,7 +46,7 @@ MiniChinesePhi3
 
 本项目采用的参考模型结构是phi3，具体细节请参考原始论文：[Phi-3 Technical Report: A Highly Capable Language Model Locally on Your Phone
 ](https://arxiv.org/abs/2404.14219)。
-原计划将Phi3中的RoPE替换为最近发布的[CoPE](https://arxiv.org/abs/2405.18719)，但由于CoPE目前难以使用Flash Attention进行加速，因此Mini-Chinese-Phi3仍然使用了Phi3的RoPE。另一方面，参考GPT-2的参数规模，Mini-Chinese-Phi3的隐藏层维度为768，头数为12，词表数量为32000，(SFT阶段调整为32064)，总参数量约0.13B。
+原计划将Phi3中的RoPE替换为最近发布的[CoPE](https://arxiv.org/abs/2405.18719)，但由于CoPE目前难以使用Flash Attention进行加速，因此Mini-Chinese-Phi3仍然使用了Phi3的RoPE。另一方面，参考GPT-2的参数规模，Mini-Chinese-Phi3的隐藏层维度为768，层数为12，词表数量为32000(SFT阶段调整为32064)，总参数量约0.13B。
 
 
 ## Tokenizer训练
