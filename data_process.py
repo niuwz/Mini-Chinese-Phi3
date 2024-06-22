@@ -303,8 +303,7 @@ def process_zhihu_kol_dataset(prompt_less_word: int = 4, response_less_word: int
     处理知乎数据集
     '''
 
-    raw_zhihu_data_path = abspath(
-        dirname(__file__)) + '/datasets/raw_data/zhihu/'
+    raw_zhihu_data_path = DATA_ROOT + '/raw_data/zhihu/'
     file_names = []
     suffix = '.parquet'
     for root, _, files in walk(raw_zhihu_data_path):
@@ -332,7 +331,7 @@ def process_zhihu_kol_dataset(prompt_less_word: int = 4, response_less_word: int
         return line1[ridx+1:]+line2[:ridx+1], line2[ridx+1:]
 
     # row keys :['INSTRUCTION', 'RESPONSE', 'SOURCE', 'METADATA']
-    save_file = PROJECT_ROOT + '/datasets/processed_data/zhihu_kol.parquet'
+    save_file = DATA_ROOT + '/processed_data/zhihu_kol.parquet'
 
     # 后续append写入，存在文件先删除
     if exists(save_file):
@@ -378,22 +377,6 @@ def process_zhihu_kol_dataset(prompt_less_word: int = 4, response_less_word: int
                     cur_rows = []
                     append = cur_rows.append
 
-            # if len(prompt) < prompt_less_word or len(response) < response_less_word:
-            #     continue
-
-            # keep_cnt += 1
-            # write_dict = {
-            #     "text": prompt+response
-            #     # 'prompt': prompt,
-            #     # 'response': response,
-            # }
-            # append(write_dict)
-
-            # if len(cur_rows) >= group_cnt:
-            #     df = pd.DataFrame(cur_rows)
-            #     write_single_parquet_file(save_file, df)
-            #     cur_rows = []
-            #     append = cur_rows.append
 
     # end for
     if len(cur_rows) > 0:
@@ -409,11 +392,8 @@ def process_sky_dataset(least_word: int = 10, max_length: int = 256, group_cnt: 
     """
     skywork
     """
-    # data_path = PROJECT_ROOT + '/datasets/raw_data/sky/'
-    # save_path = PROJECT_ROOT + '/datasets/processed_data/'
     data_path = DATA_ROOT
     save_path = DATA_ROOT
-    bos_token = "[BOS]"
     eos_token = "[EOS]"
 
     def precess_line(line: str) -> str:
@@ -428,14 +408,13 @@ def process_sky_dataset(least_word: int = 10, max_length: int = 256, group_cnt: 
         ridx = max([line1.rfind(i) for i in punctuates])
         if ridx < max_length//2:
             return line2[:max_length], line2[max_length:]
-        return bos_token+line1[ridx+1:]+line2[:ridx+1], line2[ridx+1:]
+        return line1[ridx+1:]+line2[:ridx+1], line2[ridx+1:]
     shufix = ".jsonl"
     file_names = []
     for root, _, files in walk(data_path):
         for file in files:
             if file.endswith(shufix):
-                if file.split("_")[-1] > "0004.jsonl":
-                    file_names.append(root + '/' + file)
+                file_names.append(root + '/' + file)
     print(file_names)
     cur_rows = []
     append = cur_rows.append
@@ -490,9 +469,6 @@ def remove_dataset_duplicate_rows(from_parquet_files, save_file, groups_cnt: int
     '''
     使用mini_hash删除数据集中重复的部分
     '''
-    # from_parquet_files = PROJECT_ROOT + '/datasets/dataset.parquet'
-    #
-    # save_file = PROJECT_ROOT + '/datasets/dataset_no_dulpticates.parquet'
 
     # 后续append写入，存在文件先删除
     if exists(save_file):

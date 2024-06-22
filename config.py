@@ -19,9 +19,6 @@ class MiniPhi3PreTrainConfig:
 
     learn_rate: float = 1e-4
 
-    # 混合精度 ''no','fp16','bf16' or 'fp8'
-    # mixed_precision: str = "bf16"
-
     gradient_accumulation_steps: int = 8
 
     # 模型参数预热步数
